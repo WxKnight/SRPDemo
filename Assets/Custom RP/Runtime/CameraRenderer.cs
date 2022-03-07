@@ -8,7 +8,7 @@ public partial class CameraRenderer
     private ScriptableRenderContext context;
     private Camera camera;
     private CullingResults cullResult;
-
+    private static ShaderTagId litShaderTagId = new ShaderTagId("CustomLit");
     
     private CommandBuffer buffer = new CommandBuffer
     {
@@ -89,6 +89,7 @@ public partial class CameraRenderer
             enableDynamicBatching = useDynamicBatching,
             enableInstancing = useGPUInstancing
         };
+        drawSetting.SetShaderPassName(1,litShaderTagId);
         var filterSetting = new FilteringSettings(RenderQueueRange.all);
         
         context.DrawRenderers(cullResult,ref drawSetting,ref filterSetting);
