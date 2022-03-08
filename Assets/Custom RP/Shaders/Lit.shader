@@ -9,22 +9,27 @@ Shader "Custom RP/lit"
         [Enum(off,0,on,1)] _ZWrite("Z Write",Float)=1
         _CutOff("Alpha CutOff",Range(0.0,1.0))=0.5
         [Toggle(_CLIPPING)] _Clipping("Alpha Clipping" , Float) = 0
+        [Toggle(_PREALPHA)] _PreAlpha("Pre Alpha" , Float) = 0
+        _Metallic("Metallic",Range(0.0,1.0)) = 0.5
+        _Smoothness("Smoothness",Range(0.0,1.0)) = 0.5
     }
 
     SubShader
     {
         Pass
         {
-            Tags 
+            Tags
             {
                 "LightMode" = "CustomLit"
             }
-            
+
             Blend [_SrcBlend] [_DstBlend]
             ZWrite[_ZWrite]
             HLSLPROGRAM
+            #pragma target 3.5
             #include "LitPass.hlsl"
             #pragma Shader_feature _CLIPPING
+            #pragma Shader_feature _PREALPHA
             #pragma multi_compile_instancing
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment

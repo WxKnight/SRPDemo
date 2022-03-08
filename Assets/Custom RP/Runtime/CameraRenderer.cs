@@ -7,6 +7,7 @@ public partial class CameraRenderer
     private const string bufferName = "Render Camera";
     private ScriptableRenderContext context;
     private Camera camera;
+    private Lighting lighting = new Lighting();
     private CullingResults cullResult;
     private static ShaderTagId litShaderTagId = new ShaderTagId("CustomLit");
     
@@ -28,6 +29,7 @@ public partial class CameraRenderer
         }
         
         Setup();
+        lighting.SetUp(context,cullResult);
         DrawVisibleGeometry(useDynamicBatching,useGPUInstancing);
         DrawUnsupportedShader();
         DrawGizmos();
