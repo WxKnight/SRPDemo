@@ -72,14 +72,12 @@ float4 LitPassFragment(Varyings input) : SV_TARGET
     surface.metallic = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Metallic);
     surface.smoothness = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Smoothness);
     surface.ViewDir = normalize(_WorldSpaceCameraPos - input.positionWS);//起点减终点
-    BRDF brdf;
-    #if defined(_PREALPHA)
-        brdf = GetBRDF(surface,true);
+    #if defined(_PREMULTIPLY_ALPHA)
+        BRDF brdf = GetBRDF(surface, true);
     #else
-        brdf = GetBRDF(surface);
+        BRDF brdf = GetBRDF(surface);
     #endif
-    
-    return float4(GetLighting(surface,GetBRDF(surface)),surface.alpha);
+    return float4(GetLighting(surface,brdf),surface.alpha);
 }
 
 #endif

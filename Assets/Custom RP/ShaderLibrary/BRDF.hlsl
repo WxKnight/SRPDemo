@@ -21,8 +21,7 @@ BRDF GetBRDF(Surface surface,bool applyAlphaToDiffuse = false)
 {
     BRDF brdf;
     brdf.diffuse = surface.color * GetOneMinusReflectivity(surface.metallic);
-    if(applyAlphaToDiffuse)
-    {
+    if (applyAlphaToDiffuse) {
         brdf.diffuse *= surface.alpha;
     }
     brdf.specular = lerp(MIN_REFLECTIVITY,surface.color,surface.metallic);// surface.color - brdf.diffuse; 但是金属会影响镜面反射颜色
