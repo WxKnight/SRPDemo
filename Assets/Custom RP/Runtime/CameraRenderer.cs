@@ -8,7 +8,7 @@ public partial class CameraRenderer
     private ScriptableRenderContext context;
     private Camera camera;
     private Lighting lighting = new Lighting();
-    private CullingResults cullResult;
+    private CullingResults cullingResult;
     private static ShaderTagId litShaderTagId = new ShaderTagId("CustomLit");
     
     private CommandBuffer buffer = new CommandBuffer
@@ -16,32 +16,37 @@ public partial class CameraRenderer
         name = bufferName
     };
     
-    public void Render(ScriptableRenderContext context,Camera camera,bool useDynamicBatching, bool useGPUInstancing)
+    public void Render(ScriptableRenderContext context,Camera camera,bool useDynamicBatching, bool useGPUInstancing, ShadowSettings shadowSettings)
     {
         this.context = context;
         this.camera = camera;
 
         PrepareBuffer();
         PrepareForSceneWindow();
-        if (!Cull())
+        if (!Cull(shadowSettings.maxDistance))
         {
             return;
         }
-        
+    
+        buffer.BeginSample(SampleName);
+        Execute();
+        lighting.SetUp(context, cullingResult, shadowSettings);
+        buffer.EndSample(SampleName);
         Setup();
-        lighting.SetUp(context,cullResult);
         DrawVisibleGeometry(useDynamicBatching,useGPUInstancing);
         DrawUnsupportedShader();
         DrawGizmos();
+        lighting.Cleanup();
         Submit();
     }
     
 
-    private bool Cull()
+    private bool Cull(float maxShadowDistance)
     {
         if (camera.TryGetCullingParameters(out ScriptableCullingParameters cullingParameters))
         {
-            cullResult = context.Cull(ref cullingParameters);
+            cullingParameters.shadowDistance = Mathf.Min(maxShadowDistance, camera.farClipPlane);
+            cullingResult = context.Cull(ref cullingParameters);
             return true;
         }
 
@@ -94,12 +99,12 @@ public partial class CameraRenderer
         drawSetting.SetShaderPassName(1,litShaderTagId);
         var filterSetting = new FilteringSettings(RenderQueueRange.all);
         
-        context.DrawRenderers(cullResult,ref drawSetting,ref filterSetting);
+        context.DrawRenderers(cullingResult,ref drawSetting,ref filterSetting);
         context.DrawSkybox(camera);
         filterSetting.renderQueueRange = RenderQueueRange.transparent;
         sortSetting.criteria = SortingCriteria.CommonTransparent;
         drawSetting.sortingSettings = sortSetting;
-        context.DrawRenderers(cullResult,ref drawSetting, ref  filterSetting);
+        context.DrawRenderers(cullingResult,ref drawSetting, ref  filterSetting);
     }
     
 

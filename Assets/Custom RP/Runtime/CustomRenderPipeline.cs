@@ -5,10 +5,12 @@ public class CustomRenderPipeline : RenderPipeline
 {
     CameraRenderer render = new CameraRenderer();
     bool useDynamicBatching, useGPUInstancing;
-    public CustomRenderPipeline(bool useDynamicBatching, bool useGPUInstancing,bool useSRPBatcher)
+    ShadowSettings shadowSettings;
+    public CustomRenderPipeline(bool useDynamicBatching, bool useGPUInstancing,bool useSRPBatcher,		ShadowSettings shadowSettings)
     {
         this.useDynamicBatching = useDynamicBatching;
         this.useGPUInstancing = useGPUInstancing;
+        this.shadowSettings = shadowSettings;
         GraphicsSettings.useScriptableRenderPipelineBatching = useSRPBatcher;
         GraphicsSettings.lightsUseLinearIntensity = true;
     }
@@ -18,7 +20,7 @@ public class CustomRenderPipeline : RenderPipeline
         foreach (var camera in cameras)
         {
             //每个相机渲染方式可以不同
-            render.Render(context,camera,useDynamicBatching,useGPUInstancing);
+            render.Render(context,camera,useDynamicBatching,useGPUInstancing,shadowSettings);
         }
     }
 }

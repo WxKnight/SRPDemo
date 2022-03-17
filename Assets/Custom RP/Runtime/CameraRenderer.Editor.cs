@@ -63,7 +63,7 @@ public partial class CameraRenderer
             drawingSettings.SetShaderPassName(i,legacyShaderTagIds[i]);
         }
         var filterSetting = FilteringSettings.defaultValue;
-        context.DrawRenderers(cullResult,ref drawingSettings, ref  filterSetting);
+        context.DrawRenderers(cullingResult,ref drawingSettings, ref  filterSetting);
     }
 #else
     const string SampleName = bufferName;
