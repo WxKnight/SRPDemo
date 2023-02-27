@@ -38,6 +38,7 @@ public class Shadows
         this.context = context;
         this.cullingResults = cullingResults;
         this.settings = settings;
+        ShadowedDirectionalLightCount = 0;
     }
 
     void ExecuteBuffer()
